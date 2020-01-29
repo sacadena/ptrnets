@@ -12,6 +12,9 @@ __pycache__/
 *.tar
 *.pth.tar
 
+# Idea
+.idea/
+
 # Distribution / packaging
 .Python
 build/
