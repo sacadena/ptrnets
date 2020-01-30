@@ -1,10 +1,12 @@
-import numpy as np
 import torch
+import os
+from os.path import join
 from torchvision.models import vgg19
-from os.path import join as pjoin
 from torch import nn
+import inspect
 
-PATH_WEIGHTS = '/gpfs01/bethge/home/scadena/Documents/research/monkey_csrf/pretrained-nets/weights/'
+parent_dir = os.path.dirname(os.path.dirname(inspect.stack()[0][1]))
+PATH_WEIGHTS = join(parent_dir, 'weights')
 
 
 # Define vgg auxiliary class
@@ -25,7 +27,7 @@ def vgg19_original(pretrained=False):
     """
     model = VGGConv()
     if pretrained:
-        file = pjoin(PATH_WEIGHTS, 'vgg19_original_conv.pth')
+        file = join(PATH_WEIGHTS, 'vgg19_original_conv.pth')
         state_dict = torch.load(file)
         model.features.load_state_dict(state_dict)
     return model
@@ -40,7 +42,7 @@ def vgg19_norm(pretrained=False):
 
     model = VGGConv()
     if pretrained:
-        file = pjoin(PATH_WEIGHTS, 'vgg19_norm_conv.pth')
+        file = join(PATH_WEIGHTS, 'vgg19_norm_conv.pth')
         state_dict = torch.load(file)
         model.features.load_state_dict(state_dict)
     return model
