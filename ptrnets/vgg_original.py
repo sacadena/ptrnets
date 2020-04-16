@@ -1,13 +1,23 @@
 import torch
-import os
-from os.path import join
-from torchvision.models import vgg19
 from torch import nn
-import inspect
+import os
+from torchvision.models import vgg19, vgg16
+from .utils import load_state_dict_from_google_drive
+from torch.hub import load_state_dict_from_url
 
-parent_dir = os.path.dirname(os.path.dirname(inspect.stack()[0][1]))
-PATH_WEIGHTS = join(parent_dir, 'weights')
+#__all__ = ['vgg19_original', 'vgg19_norm']
 
+
+google_drive_ids = {
+    'vgg19_original': '18KRngGJMAhQJmlzjHmgyXuNjqd2l6rQG',
+    'vgg19_norm'    : '1r2MAofFyBy3TyazQ7NQOpoAr1dDEAKzL',
+}
+
+model_urls = {
+    'vgg19_original': '',
+    'vgg19_norm'    : '',
+}    
+    
 
 # Define vgg auxiliary class
 class VGGConv(nn.Module):
@@ -18,32 +28,34 @@ class VGGConv(nn.Module):
         self.avgpool  = _vgg19m.avgpool
 
 
-def vgg19_original(pretrained=False):
+def _vgg19conv(arch, pretrained, progress, **kwargs):
+    model = VGGConv()
+    if pretrained:
+        try:
+            state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
+        except:
+            state_dict = load_state_dict_from_google_drive(google_drive_ids[arch],
+                                                  progress=progress, **kwargs)
+        model.features.load_state_dict(state_dict)
+    return model
+    
+
+def vgg19_original(pretrained=False, progress=True, **kwargs):
     r"""VGG 19-layer model
     `"Very Deep Convolutional Networks For Large-Scale Image Recognition" <https://arxiv.org/pdf/1409.1556.pdf>` ONLY CONVOLUTIONAL LAYERS
-    The weights of this network are those of the original publication and not those from pytorch
+    The weights of this network are those of the original publication and not those from the network trained in pytorch
     Args:
         pretrained (bool): If True, returns the convlayers pre-trained on ImageNet (original weights)
     """
-    model = VGGConv()
-    if pretrained:
-        file = join(PATH_WEIGHTS, 'vgg19_original_conv.pth')
-        state_dict = torch.load(file)
-        model.features.load_state_dict(state_dict)
-    return model
+    return _vgg19conv('vgg19_original', pretrained, progress, **kwargs)
+    
 
-def vgg19_norm(pretrained=False):
+def vgg19_norm(pretrained=False, progress=True, **kwargs):
     r"""VGG 19-layer model
-    `"Very Deep Convolutional Networks For Large-Scale Image Recognition" <https://arxiv.org/pdf/1409.1556.pdf>` ONLY CONVOLUTIONAL LAYERS with Original Normalized weights
-    The weights of this network are those of the original publication normalized so that outputs have mean and std equal to one
+    `"Very Deep Convolutional Networks For Large-Scale Image Recognition" <https://arxiv.org/pdf/1409.1556.pdf>` ONLY CONVOLUTIONAL LAYERS 
+    The weights of this network are those of the original publication normalized so that outputs have mean and std equal to one over ImageNet
     Args:
         pretrained (bool): If True, returns the conv layers pre-trained on ImageNet (original weights)
     """
-
-    model = VGGConv()
-    if pretrained:
-        file = join(PATH_WEIGHTS, 'vgg19_norm_conv.pth')
-        state_dict = torch.load(file)
-        model.features.load_state_dict(state_dict)
-    return model
+    return _vgg19conv('vgg19_norm', pretrained, progress, **kwargs)
 
