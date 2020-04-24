@@ -59,3 +59,58 @@ def vgg19_norm(pretrained=False, progress=True, **kwargs):
     """
     return _vgg19conv('vgg19_norm', pretrained, progress, **kwargs)
 
+
+
+from collections import OrderedDict
+
+RF_SIZES = OrderedDict()
+RF_SIZES['conv1/conv1_1'] = 3
+RF_SIZES['conv1/conv1_2'] = 5
+RF_SIZES['pool1'] = 6
+RF_SIZES['conv2/conv2_1'] = 10
+RF_SIZES['conv2/conv2_2'] = 14
+RF_SIZES['pool2'] = 16
+RF_SIZES['conv3/conv3_1'] = 24
+RF_SIZES['conv3/conv3_2'] = 32
+RF_SIZES['conv3/conv3_3'] = 40
+RF_SIZES['conv3/conv3_4'] = 48
+RF_SIZES['pool3'] = 52
+RF_SIZES['conv4/conv4_1'] = 68
+RF_SIZES['conv4/conv4_2'] = 84
+RF_SIZES['conv4/conv4_3'] = 100
+RF_SIZES['conv4/conv4_4'] = 116
+RF_SIZES['pool4'] = 124
+RF_SIZES['conv5/conv5_1'] = 156
+RF_SIZES['conv5/conv5_2'] = 188
+RF_SIZES['conv5/conv5_3'] = 220
+RF_SIZES['conv5/conv5_4'] = 252
+RF_SIZES['pool5'] = 268
+
+LAYER_ID = OrderedDict()
+LAYER_ID['conv1/conv1_1'] = 1
+LAYER_ID['conv1/conv1_2'] = 3
+LAYER_ID['pool1'] = 5
+LAYER_ID['conv2/conv2_1'] = 6
+LAYER_ID['conv2/conv2_2'] = 8
+LAYER_ID['pool2'] = 10
+LAYER_ID['conv3/conv3_1'] = 11
+LAYER_ID['conv3/conv3_2'] = 13
+LAYER_ID['conv3/conv3_3'] = 15
+LAYER_ID['conv3/conv3_4'] = 17
+LAYER_ID['pool3'] = 19
+LAYER_ID['conv4/conv4_1'] = 20
+LAYER_ID['conv4/conv4_2'] = 22
+LAYER_ID['conv4/conv4_3'] = 24
+LAYER_ID['conv4/conv4_4'] = 26
+LAYER_ID['pool4'] = 28
+LAYER_ID['conv5/conv5_1'] = 29
+LAYER_ID['conv5/conv5_2'] = 31
+LAYER_ID['conv5/conv5_3'] = 33
+LAYER_ID['conv5/conv5_4'] = 35
+LAYER_ID['pool5'] = 37
+
+
+NUM_FEATMAPS = OrderedDict()
+fmap_groups = [64,128,256,512,512]
+for k in RF_SIZES.keys():
+    NUM_FEATMAPS[k] = fmap_groups[int(k.split('/')[0][-1]) - 1]
