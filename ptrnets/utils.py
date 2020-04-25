@@ -83,7 +83,7 @@ def _get_name_file(response):
     return response.headers.get('Content-Disposition').split(';')[1].split('\"')[1]
     
 
-def load_state_dict_from_google_drive(id, model_dir=None, map_location=None, progress=True, check_hash=False):
+def load_state_dict_from_google_drive(id, model_dir=None, map_location=None, progress=True, check_hash=False, file_name=None):
     r"""Loads the Torch serialized object at the given google drive file id.
     Note: Inspired by torch.hub.load_state_dict_from_url
 
@@ -128,8 +128,12 @@ def load_state_dict_from_google_drive(id, model_dir=None, map_location=None, pro
             # Unexpected OSError, re-raise.
             raise
             
+    
     response = _get_response(id)
-    filename = _get_name_file(response)
+    try:
+        filename = _get_name_file(response)
+    except:
+        filename = file_name
     
     cached_file = os.path.join(model_dir, filename)
     if not os.path.exists(cached_file):
