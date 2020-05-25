@@ -35,7 +35,7 @@ def _vgg19conv(arch, pretrained, progress, **kwargs):
             state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
         except:
             state_dict = load_state_dict_from_google_drive(google_drive_ids[arch],
-                                                  progress=progress, file_name = '{}_conv.pth'.format(arch))
+                                                  progress=progress, filename = '{}_conv.pth'.format(arch))
         model.features.load_state_dict(state_dict)
     return model
     
