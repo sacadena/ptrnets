@@ -11,5 +11,5 @@ setup(
     author='Santiago Cadena',
     author_email='santiago.cadena@uni-tuebingen.de',
     packages=find_packages(exclude=[]),
-    install_requires=[],
+    install_requires=requirements,
 )
