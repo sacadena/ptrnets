@@ -4,6 +4,9 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
+with open(path.join(here, "requirements.txt")) as f:
+    requirements = f.read().split()
+
 setup(
     name='ptrnets',
     version='0.0.0',
