@@ -5,7 +5,7 @@ from torchvision.models import vgg19, vgg16
 from .utils import load_state_dict_from_google_drive
 from torch.hub import load_state_dict_from_url
 
-#__all__ = ['vgg19_original', 'vgg19_norm']
+__all__ = ['vgg19_original', 'vgg19_norm']
 
 
 google_drive_ids = {
@@ -26,6 +26,12 @@ class VGGConv(nn.Module):
         _vgg19m = vgg19()
         self.features = _vgg19m.features
         self.avgpool  = _vgg19m.avgpool
+        
+    def forward(self, x):
+        x = self.features(x)
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        return x
 
 
 def _vgg19conv(arch, pretrained, progress, **kwargs):
