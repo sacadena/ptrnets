@@ -10,6 +10,50 @@ import warnings
 import zipfile
 import gdown
 from gdown.parse_url import parse_url
+from torch import nn
+
+
+def clip_model(model, layer_name):
+    """
+    Returns a copy of the model up to :layer_name:
+    Params:
+        model: (nn.Module instance)
+        layer_name (string) Should be among the named modules of model
+    Returns:
+        clipped_model: (nn.Sequential) copy of model up to the layer
+    Examples:
+        from torchvision.models import resnet50, vgg19
+        resnet = resnet50(pretrained=True)
+        vgg    = vgg19(pretrained=True)
+        
+        clipped_resnet = clip_model(resnet, 'layer3.0.conv2')
+        clipped_vgg    = clip_model(vgg, 'features.10')
+    """
+    
+    assert layer_name in [n for n,_ in model.named_modules()], 'No module named {}'.format(layer_name)
+    
+    features = OrderedDict()
+    nodes_iter = iter(layer_name.split('.'))
+    
+    def recursive(module, node = next(nodes_iter), prefix=[]):
+        
+        for name, layer in module.named_children():
+            fullname = ".".join(prefix+[name])
+            if (name == node) and (fullname != layer_name):
+                recursive(layer, node = next(nodes_iter), prefix=[fullname])
+                return
+            else:
+                features[name] = layer
+                #print(fullname)
+                if fullname == layer_name:
+                    return
+
+    recursive(model)
+    
+    clipped_model = nn.Sequential(features)
+    
+    return clipped_model
+
 
 
 def _get_name(id):
