@@ -32,7 +32,8 @@ def clip_model(model, layer_name):
     
     features = OrderedDict()
     nodes_iter = iter(layer_name.split('.'))
-    
+    mode = model.training
+
     def recursive(module, node = next(nodes_iter), prefix=[]):
         
         for name, layer in module.named_children():
@@ -49,6 +50,10 @@ def clip_model(model, layer_name):
     recursive(model)
     
     clipped_model = nn.Sequential(features)
+    if mode:
+        clipped_model.train()
+    else:
+        clipped_model.eval()
     
     return clipped_model
 
@@ -56,7 +61,7 @@ def clip_model(model, layer_name):
 def probe_model(model, layer_name):
     
     assert layer_name in [n for n,_ in model.named_modules()], 'No module named {}'.format(layer_name)
-    model.eval();
+    #model.eval();
     #hook = hook_model(model)
     hook = hook_model_module(model, layer_name)
     def func(x):
@@ -77,7 +82,7 @@ class ModuleHook():
 
     def hook_fn(self, module, input, output):
         self.module = module
-        self.features = output
+        self.features = output.clone()
 
     def close(self):
         self.hook.remove()
