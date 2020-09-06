@@ -40,7 +40,7 @@ def _model(arch, model_fn, pretrained, progress, use_data_parallel, **kwargs):
             checkpoint = load_state_dict_from_url(model_urls[arch], progress=progress)
         except:
             checkpoint = load_state_dict_from_google_drive(google_drive_ids[arch],
-                                                  progress=progress, **kwargs)
+                                                  progress=progress, filename = '{}.pth'.format(arch), **kwargs)
         
         if use_data_parallel:
             model.load_state_dict(checkpoint["state_dict"])
