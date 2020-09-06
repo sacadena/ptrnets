@@ -177,8 +177,10 @@ class TaskDrivenCore2(Core2d, nn.Module):
         
         
         # Decide whether to probe the model with a forward hook or to clip the model by replicating architecture of the model up to layer :layer_name:
+        
         x = torch.randn(1,3,224,224)
         try:
+            self.model.eval();
             model_clipped = clip_model(self.model, self.layer_name)
             clip_out = model_clipped(x);
         except:
@@ -186,10 +188,9 @@ class TaskDrivenCore2(Core2d, nn.Module):
             self.use_probe = True
         
         self.model_probe = self.probe_model() 
-        
-     
+
         if not(self.use_probe):
-            if torch.allclose(self.model_probe(x), clip_out):
+            if not(torch.allclose(self.model_probe(x), clip_out)):
                 warnings.warn('Unable to recover model outputs via a sequential modules. Using forward hook instead')
                 self.use_probe = True
               
@@ -239,7 +240,6 @@ class TaskDrivenCore2(Core2d, nn.Module):
     def probe_model(self):
     
         assert self.layer_name in [n for n,_ in self.model.named_modules()], 'No module named {}'.format(self.layer_name)
-        self.model.eval();
         hook = hook_model_module(self.model, self.layer_name)
         def func(x):
             try:
