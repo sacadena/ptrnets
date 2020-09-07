@@ -64,7 +64,7 @@ def edge_occlusion_encoder(pretrained=True, progress=True, use_data_parallel=Fal
 
 def edge_texture_encoder(pretrained=True, progress=True, use_data_parallel=False, **kwargs):
     """ encoder network"""
-    return _model("edge_texture__encoder", pretrained, progress=progress, use_data_parallel=use_data_parallel,  **kwargs)
+    return _model("edge_texture_encoder", pretrained, progress=progress, use_data_parallel=use_data_parallel,  **kwargs)
 
 
 def egomotion_encoder(pretrained=True, progress=True, use_data_parallel=False, **kwargs):
