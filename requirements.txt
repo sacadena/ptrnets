@@ -2,4 +2,3 @@ torch
 torchvision
 tqdm
 gdown
-git+https://github.com/sacadena/midlevel-reps.git@visualpriors
