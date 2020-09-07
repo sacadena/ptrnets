@@ -3,6 +3,7 @@ from .shape_biased import *
 from .simclr import *
 #from .imnet_rnet import *
 from .robust import *
+from .taskonomy import *
 
 import torchvision
 import torch 
