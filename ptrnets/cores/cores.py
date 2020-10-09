@@ -83,8 +83,9 @@ class TaskDrivenCore(Core2d, nn.Module):
         # Remove the bias of the last conv layer if not :bias:
         if not bias:
             if 'bias' in model_clipped[-1]._parameters:
-                zeros = torch.zeros_like(model_clipped[-1].bias)
-                model_clipped[-1].bias.data = zeros
+                if model_clipped[-1].bias is not None:
+                    zeros = torch.zeros_like(model_clipped[-1].bias)
+                    model_clipped[-1].bias.data = zeros
         
         # Fix pretrained parameters during training
         if not fine_tune:
@@ -194,12 +195,13 @@ class TaskDrivenCore2(Core2d, nn.Module):
                 warnings.warn('Unable to recover model outputs via a sequential modules. Using forward hook instead')
                 self.use_probe = True
               
-        
+
         # Remove the bias of the last conv layer if not :bias:
         if not bias and not self.use_probe:
             if 'bias' in model_clipped[-1]._parameters:
-                zeros = torch.zeros_like(model_clipped[-1].bias)
-                model_clipped[-1].bias.data = zeros
+                if model_clipped[-1].bias is not None:
+                    zeros = torch.zeros_like(model_clipped[-1].bias)
+                    model_clipped[-1].bias.data = zeros
         
         # Fix pretrained parameters during training
         if not fine_tune and not self.use_probe:
