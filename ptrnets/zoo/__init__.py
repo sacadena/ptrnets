@@ -5,6 +5,7 @@ from .simclr import *
 from .robust import *
 from .taskonomy import *
 from .cifar10 import *
+from .cornet import *
 
 import torchvision
 import torch 
