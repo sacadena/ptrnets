@@ -175,11 +175,13 @@ class TaskDrivenCore2(Core2d, nn.Module):
 
         # Download model and cut after specified layer
         self.model = getattr(ptrnets, model_name)(pretrained=pretrained)
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         
+        self.model.to(self.device)
         
         # Decide whether to probe the model with a forward hook or to clip the model by replicating architecture of the model up to layer :layer_name:
         
-        x = torch.randn(1,3,224,224).cuda()
+        x = torch.randn(1,3,224,224).to(self.device)
         try:
             self.model.eval();
             model_clipped = clip_model(self.model, self.layer_name)
@@ -260,7 +262,7 @@ class TaskDrivenCore2(Core2d, nn.Module):
 
         Returns: Number of output channels
         """
-        x = torch.randn(1,3,224,224).cuda()
+        x = torch.randn(1,3,224,224).to(self.device)
         if self.use_probe:
             outch = self.model_probe(x).shape[1]
         else:
