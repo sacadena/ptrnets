@@ -15,5 +15,5 @@ setup(
     author_email='santiago.cadena@uni-tuebingen.de',
     packages=find_packages(exclude=[]),
     install_requires=requirements,
-    #dependency_links=['https://github.com/sacadena/midlevel-reps.git@visualpriors#egg=visualpriors']
+    dependency_links=['https://github.com/sacadena/midlevel-reps.git@visualpriors#egg=visualpriors']
 )
