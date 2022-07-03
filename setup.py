@@ -15,6 +15,6 @@ setup(
     author_email='santiago.cadena@uni-tuebingen.de',
     packages=find_packages(exclude=[]),
     install_requires=requirements,
-    dependency_links=["git+https://github.com/dicarlolab/CORnet",
-                      "git+https://github.com/sacadena/midlevel-reps.git@visualpriors#egg=visualpriors"]
+    dependency_links=["git+https://github.com/dicarlolab/CORnet@master#egg=CORnet-0.1.0",
+                      "git+https://github.com/sacadena/midlevel-reps.git@visualpriors#egg=visualpriors-0.3.5"]
 )
