@@ -1,5 +1,6 @@
-torch
-torchvision
-tqdm
-gdown
-visualpriors
+torch>=1.4.0
+torchvision>=0.5.0
+tqdm>=4.42.1
+gdown>=4.5.1
+git+https://github.com/sacadena/midlevel-reps.git@visualpriors#egg=visualpriors
+git+https://github.com/dicarlolab/CORnet
