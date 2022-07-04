@@ -7,7 +7,8 @@ here = path.abspath(path.dirname(__file__))
 requirements = ["torch>=1.4.0",
 		"torchvision>=0.5.0",
 		"tqdm>=4.42.1",
-		"gdown>=4.5.1"]
+		"gdown>=4.5.1",
+		"visualpriors==0.3.5"]
 
 setup(
     name='ptrnets',
