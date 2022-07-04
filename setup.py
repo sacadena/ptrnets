@@ -4,8 +4,10 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, "requirements.txt")) as f:
-    requirements = f.read().split()
+requirements = ["torch>=1.4.0",
+		"torchvision>=0.5.0",
+		"tqdm>=4.42.1",
+		"gdown>=4.5.1"]
 
 setup(
     name='ptrnets',
@@ -16,5 +18,5 @@ setup(
     packages=find_packages(exclude=[]),
     install_requires=requirements,
     dependency_links=["git+https://github.com/dicarlolab/CORnet@master#egg=CORnet-0.1.0",
-                      "git+https://github.com/sacadena/midlevel-reps.git@visualpriors#egg=visualpriors-0.3.5"]
+		      "git+https://github.com/sacadena/midlevel-reps.git@visualpriors#egg=visualpriors-0.3.5"]
 )
