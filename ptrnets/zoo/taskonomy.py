@@ -1,5 +1,16 @@
 import torch
 from torch.hub import load_state_dict_from_url
+
+try:
+    import visualpriors
+except ModuleNotFoundError:
+    import sys
+    import subprocess
+    python = sys.executable
+    missing = ["git+https://github.com/sacadena/midlevel-reps.git@visualpriors#egg=visualpriors-0.3.5"]
+    subprocess.check_call([python, '-m', 'pip', 'install', *missing], stdout=subprocess.DEVNULL)
+
+
 from visualpriors.taskonomy_network import TaskonomyEncoder, LIST_OF_TASKS
 from visualpriors.transforms import TASKONOMY_PRETRAINED_URLS
 
