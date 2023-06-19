@@ -1,10 +1,6 @@
-try:
-    import cornet
-except ModuleNotFoundError:
-    import sys
-    import subprocess
-    python = sys.executable
-    missing = ["git+https://github.com/dicarlolab/CORnet"]
-    subprocess.check_call([python, '-m', 'pip', 'install', *missing], stdout=subprocess.DEVNULL)
+from ptrnets.zoo.third_party.cornet import cornet_r
+from ptrnets.zoo.third_party.cornet import cornet_rt
+from ptrnets.zoo.third_party.cornet import cornet_s
+from ptrnets.zoo.third_party.cornet import cornet_z
 
-from cornet import cornet_z, cornet_r, cornet_rt, cornet_s
+__all__ = ["cornet_z", "cornet_r", "cornet_rt", "cornet_s"]
