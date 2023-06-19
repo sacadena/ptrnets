@@ -35,7 +35,6 @@ def _model(
     **kwargs,
 ):
     model = model_fn(pretrained=False)
-
     if pretrained:
         checkpoint = load_state_dict_from_model_name(model_name, progress=progress)
         state_dict = {
