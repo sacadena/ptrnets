@@ -1,16 +1,15 @@
-from .vgg_original import *
-from .shape_biased import *
-from .simclr import *
-#from .imnet_rnet import *
-from .robust import *
-from .taskonomy import *
+import torch
+import torchvision
+
 from .cifar10 import *
 from .cornet import *
+from .robust import *
+from .shape_biased import *
+from .simclr import *
+from .taskonomy import *
+from .vgg_original import *
 
-import torchvision
-import torch 
 
-
-def resnet50_untrained(pretrained=False, seed=42, **kwargs):
+def resnet50_untrained(seed=42, **kwargs):
     torch.manual_seed(seed)
     return torchvision.models.resnet50(pretrained=False, **kwargs)

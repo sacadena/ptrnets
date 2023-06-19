@@ -1,18 +1,23 @@
 # Utils for getting model layers
-
 from collections import OrderedDict
+from typing import Any
+from typing import Callable
+from typing import List
+from typing import Optional
+
 from torch import nn
 
 
+# TODO:
+# Check that building an nn.Sequential of the modules of the model corresponds to the output of the register
+# forward hook. This won't be the case if the model has operations in the forward pass that are not instances of
+# nn.Module (eg. torch.flatten). Since we want to clip the model at a layer (i.e submodule) without forwarding inputs
+# through the entire network (what would happen with a hook) we should do the following: When adding each module to
+# sequential, check that the output is equal to the forward hook. if it isn't then keep submodlues added before and
+# add the following full subnodule that makes the hook match. Then return the output of the hook for the clipped model.
 
-## TODO:
-# Check that building an nn.Sequential of the modules of the model corresponds to the output of the register forward hook
-# This won't be the case if the model has operations in the forward pass that are not instances of nn.Module (eg. torch.flatten)
-# Since we want to clip the model at a layer (i.e submodule) without forwarding inputs through the entire network (what would happen with a hook) 
-# we should do the following: When adding each module to sequential, check that the output is equal to the forward hook. if it isn't then 
-# keep submodlues added before and add the following full subnodule that makes the hook match. Then return the output of the hook for the clipped model.
 
-def clip_model(model, layer_name):
+def clip_model(model: nn.Module, layer_name: str) -> nn.Module:
     """
     Returns a copy of the model up to :layer_name:
     Params:
@@ -27,106 +32,114 @@ def clip_model(model, layer_name):
         clipped_resnet = clip_model(resnet, 'layer3.0.conv2')
         clipped_vgg    = clip_model(vgg, 'features.10')
     """
-    
-    assert layer_name in [n for n,_ in model.named_modules()], 'No module named {}'.format(layer_name)
-    
+
+    assert layer_name in [
+        n for n, _ in model.named_modules()
+    ], f"No module named {layer_name}"
+
     features = OrderedDict()
-    nodes_iter = iter(layer_name.split('.'))
+    nodes_iter = iter(layer_name.split("."))
     mode = model.training
 
-    def recursive(module, node = next(nodes_iter), prefix=[]):
-        
+    def recursive(module, node=next(nodes_iter), prefix: Optional[List[str]] = None):
+        prefix = prefix or []
         for name, layer in module.named_children():
-            fullname = ".".join(prefix+[name])
+            fullname = ".".join(prefix + [name])
             if (name == node) and (fullname != layer_name):
-                recursive(layer, node = next(nodes_iter), prefix=[fullname])
+                recursive(layer, node=next(nodes_iter), prefix=[fullname])
                 return
             else:
                 features[name] = layer
-                #print(fullname)
+                # print(fullname)
                 if fullname == layer_name:
                     return
 
     recursive(model)
-    
+
     clipped_model = nn.Sequential(features)
     if mode:
         clipped_model.train()
     else:
         clipped_model.eval()
-    
+
     return clipped_model
 
 
-def probe_model(model, layer_name):
-    
-    assert layer_name in [n for n,_ in model.named_modules()], 'No module named {}'.format(layer_name)
-    #model.eval();
-    #hook = hook_model(model)
+def probe_model(model: nn.Module, layer_name: str):
+    assert layer_name in [
+        n for n, _ in model.named_modules()
+    ], f"No module named {layer_name}"
+    # model.eval();
+    # hook = hook_model(model)
     hook = hook_model_module(model, layer_name)
+
     def func(x):
         try:
-            model(x); 
-        except:
+            model(x)
+        except (RuntimeError, TypeError, ValueError):
             pass
         return hook(layer_name)
-    
+
     return func
 
 
-class ModuleHook():
-    def __init__(self, module):
+class ModuleHook:
+    def __init__(self, module: nn.Module) -> None:
         self.hook = module.register_forward_hook(self.hook_fn)
         self.module = None
         self.features = None
 
-    def hook_fn(self, module, input, output):
+    def hook_fn(self, module: nn.Module, input: Any, output: Any) -> None:
+        _ = input
         self.module = module
         self.features = output.clone()
 
-    def close(self):
+    def close(self) -> None:
         self.hook.remove()
 
 
-
-def hook_model(model):
-    
+def hook_model(model: nn.Module) -> Callable:
     features = OrderedDict()
-    def hook_layers(net, prefix=[]):
+
+    def hook_layers(net: nn.Module, prefix: Optional[List[str]] = None) -> None:
+        prefix = prefix or []
         if hasattr(net, "_modules"):
             for name, layer in net._modules.items():
                 if layer is None:
                     # e.g. GoogLeNet's aux1 and aux2 layers
                     continue
-                features[".".join(prefix+[name])] = ModuleHook(layer)
-                hook_layers(layer, prefix=prefix+[name])
+                features[".".join(prefix + [name])] = ModuleHook(layer)
+                hook_layers(layer, prefix=prefix + [name])
+
     hook_layers(model)
 
-    def hook(layer):
+    def hook(layer: str) -> Any:
         if layer == "labels":
             return list(features.values())[-1].features
         return features[layer].features
+
     return hook
 
 
-
-def hook_model_module(model, module):
-    
+def hook_model_module(model: nn.Module, module: nn.Module):
     features = OrderedDict()
-    def hook_layers(net, prefix=[]):
+
+    def hook_layers(net, prefix: Optional[List[str]] = None) -> None:
+        prefix = prefix or []
         if hasattr(net, "_modules"):
             for name, layer in net._modules.items():
                 if layer is None:
                     # e.g. GoogLeNet's aux1 and aux2 layers
                     continue
-                if ".".join(prefix+[name]) == module:
-                    features[".".join(prefix+[name])] = ModuleHook(layer)
-                hook_layers(layer, prefix=prefix+[name])
-    
+                if ".".join(prefix + [name]) == module:
+                    features[".".join(prefix + [name])] = ModuleHook(layer)
+                hook_layers(layer, prefix=prefix + [name])
+
     hook_layers(model)
 
-    def hook(layer):
+    def hook(layer: str) -> Any:
         if layer == "labels":
             return list(features.values())[-1].features
         return features[layer].features
+
     return hook

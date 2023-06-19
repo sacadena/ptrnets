@@ -1,26 +1,38 @@
-## Custom pytorch modules
+# Custom pytorch modules
+from typing import Sequence
+
 import torch
 from torch import nn
+
 
 class Unnormalize(nn.Module):
     """
     Helper class for unnormalizing input tensor
     """
-    def __init__(self, mean=[0], std=[1], inplace=False):
-        super(Unnormalize, self).__init__()
+
+    def __init__(
+        self,
+        mean: Sequence[float] = (0.0,),
+        std: Sequence[float] = (1.0,),
+        inplace: bool = False,
+    ) -> None:
+        super().__init__()
         self.mean = mean
-        self.std  = std
+        self.std = std
         self.inplace = inplace
-    
-    def forward(self, x):
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return unnormalize(x, self.mean, self.std, self.inplace)
 
 
-
-
-def unnormalize(tensor, mean=[0], std=[1], inplace=False):
+def unnormalize(
+    tensor: torch.Tensor,
+    mean: Sequence[float] = (0.0,),
+    std: Sequence[float] = (1.0,),
+    inplace: bool = False,
+) -> torch.Tensor:
     """Unnormalize a tensor image by first multiplying by std (channel-wise) and then adding the mean (channel-wise)
-    
+
     Args:
         tensor (Tensor): Tensor image of size (N, C, H, W) to be de-standarized.
         mean (sequence): Sequence of original means for each channel.
@@ -29,29 +41,35 @@ def unnormalize(tensor, mean=[0], std=[1], inplace=False):
 
     Returns:
         Tensor: Unnormalized Tensor image.
-    
+
     """
-    
+
     if not torch.is_tensor(tensor):
-        raise TypeError('tensor should be a torch tensor. Got {}.'.format(type(tensor)))
-        
+        raise TypeError(f"tensor should be a torch tensor. Got {type(tensor)}.")
+
     if tensor.ndimension() != 4:
-        raise ValueError('Expected tensor to be a tensor image of size (N, C, H, W). Got tensor.size() = '
-                         '{}.'.format(tensor.size()))
+        raise ValueError(
+            "Expected tensor to be a tensor image of size (N, C, H, W). Got tensor.size() = "
+            "{}.".format(tensor.size())
+        )
     if not inplace:
-        tensor=tensor.clone()
-    
+        tensor = tensor.clone()
+
     dtype = tensor.dtype
-    mean = torch.as_tensor(mean, dtype=dtype, device=tensor.device)
-    std = torch.as_tensor(std, dtype=dtype, device=tensor.device)
-    
-    if (std == 0).any():
-        raise ValueError('std evaluated to zero after conversion to {}, leading to division by zero.'.format(dtype))
-        
-    if mean.ndim == 1:
-        mean = mean[None, :, None, None]
-    if std.ndim == 1:
-        std = std[None, :, None, None]       
-    
-    tensor.mul_(std).add_(mean)
+    mean_tensor = torch.as_tensor(mean, dtype=dtype, device=tensor.device)
+    std_tensor = torch.as_tensor(std, dtype=dtype, device=tensor.device)
+
+    if not std_tensor.all():
+        raise ValueError(
+            "std evaluated to zero after conversion to {}, leading to division by zero.".format(
+                dtype
+            )
+        )
+
+    if mean_tensor.ndim == 1:
+        mean_tensor = mean_tensor[None, :, None, None]
+    if std_tensor.ndim == 1:
+        std_tensor = std_tensor[None, :, None, None]
+
+    tensor.mul_(std_tensor).add_(mean_tensor)
     return tensor
