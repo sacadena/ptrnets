@@ -36,6 +36,8 @@ def _get_name(id_):
         if not (file_id and is_download_link):
             break
 
+        url = res.url  # Update the URL if redirected
+
     if file_id and is_download_link:
         m = re.search('filename="(.*)"', res.headers["Content-Disposition"])
         output = m.groups()[0]

@@ -8,15 +8,6 @@ from typing import Optional
 from torch import nn
 
 
-# TODO:
-# Check that building an nn.Sequential of the modules of the model corresponds to the output of the register
-# forward hook. This won't be the case if the model has operations in the forward pass that are not instances of
-# nn.Module (eg. torch.flatten). Since we want to clip the model at a layer (i.e submodule) without forwarding inputs
-# through the entire network (what would happen with a hook) we should do the following: When adding each module to
-# sequential, check that the output is equal to the forward hook. if it isn't then keep submodlues added before and
-# add the following full subnodule that makes the hook match. Then return the output of the hook for the clipped model.
-
-
 def clip_model(model: nn.Module, layer_name: str) -> nn.Module:
     """
     Returns a copy of the model up to :layer_name:
