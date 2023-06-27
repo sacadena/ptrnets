@@ -3,7 +3,7 @@ coverage:
   round: down
   precision: 1
   ignore:
-    - "ptrnets/zoo/*"
+    - "ptrnets/ptrnets/zoo/*"
   status:
     project:
       default:
