@@ -49,8 +49,7 @@ def unnormalize(
 
     if tensor.ndimension() != 4:
         raise ValueError(
-            "Expected tensor to be a tensor image of size (N, C, H, W). Got tensor.size() = "
-            "{}.".format(tensor.size())
+            f"Expected tensor to be a tensor image of size (N, C, H, W). Got tensor.size() = {tensor.size()}."
         )
     if not inplace:
         tensor = tensor.clone()
@@ -60,11 +59,7 @@ def unnormalize(
     std_tensor = torch.as_tensor(std, dtype=dtype, device=tensor.device)
 
     if not std_tensor.all():
-        raise ValueError(
-            "std evaluated to zero after conversion to {}, leading to division by zero.".format(
-                dtype
-            )
-        )
+        raise ValueError(f"std evaluated to zero after conversion to {dtype}, leading to division by zero.")
 
     if mean_tensor.ndim == 1:
         mean_tensor = mean_tensor[None, :, None, None]

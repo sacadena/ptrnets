@@ -5,10 +5,11 @@ from typing import Callable
 from typing import List
 from typing import Optional
 
+import torch
 from torch import nn
 
 
-def clip_model(model: nn.Module, layer_name: str) -> nn.Module:
+def clip_model(model: nn.Module, layer_name: str) -> nn.Sequential:
     """
     Returns a copy of the model up to :layer_name:
     Params:
@@ -24,15 +25,13 @@ def clip_model(model: nn.Module, layer_name: str) -> nn.Module:
         clipped_vgg    = clip_model(vgg, 'features.10')
     """
 
-    assert layer_name in [
-        n for n, _ in model.named_modules()
-    ], f"No module named {layer_name}"
+    assert layer_name in [n for n, _ in model.named_modules()], f"No module named {layer_name}"
 
     features = OrderedDict()
     nodes_iter = iter(layer_name.split("."))
     mode = model.training
 
-    def recursive(module, node=next(nodes_iter), prefix: Optional[List[str]] = None):
+    def recursive(module: nn.Module, node: str = next(nodes_iter), prefix: Optional[List[str]] = None) -> None:
         prefix = prefix or []
         for name, layer in module.named_children():
             fullname = ".".join(prefix + [name])
@@ -56,15 +55,13 @@ def clip_model(model: nn.Module, layer_name: str) -> nn.Module:
     return clipped_model
 
 
-def probe_model(model: nn.Module, layer_name: str):
-    assert layer_name in [
-        n for n, _ in model.named_modules()
-    ], f"No module named {layer_name}"
+def probe_model(model: nn.Module, layer_name: str) -> Callable:
+    assert layer_name in [n for n, _ in model.named_modules()], f"No module named {layer_name}"
     # model.eval();
     # hook = hook_model(model)
     hook = hook_model_module(model, layer_name)
 
-    def func(x):
+    def func(x: torch.Tensor) -> torch.Tensor:
         try:
             model(x)
         except (RuntimeError, TypeError, ValueError):
@@ -77,7 +74,7 @@ def probe_model(model: nn.Module, layer_name: str):
 class ModuleHook:
     def __init__(self, module: nn.Module) -> None:
         self.hook = module.register_forward_hook(self.hook_fn)
-        self.module = None
+        self.module: Optional[nn.Module] = None
         self.features = None
 
     def hook_fn(self, module: nn.Module, input: Any, output: Any) -> None:
@@ -112,10 +109,10 @@ def hook_model(model: nn.Module) -> Callable:
     return hook
 
 
-def hook_model_module(model: nn.Module, module: nn.Module):
+def hook_model_module(model: nn.Module, module: str) -> Callable:
     features = OrderedDict()
 
-    def hook_layers(net, prefix: Optional[List[str]] = None) -> None:
+    def hook_layers(net: nn.Module, prefix: Optional[List[str]] = None) -> None:
         prefix = prefix or []
         if hasattr(net, "_modules"):
             for name, layer in net._modules.items():

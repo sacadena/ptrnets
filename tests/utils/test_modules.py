@@ -50,9 +50,7 @@ def test_unnormalize_with_inplace_true():
 
     # Compare the unnormalized tensor with the expected tensor
     assert torch.allclose(unnormalized_tensor, expected_tensor)
-    assert torch.allclose(
-        tensor, expected_tensor
-    )  # Check if the input tensor is modified
+    assert torch.allclose(tensor, expected_tensor)  # Check if the input tensor is modified
 
 
 def test_unnormalize_with_invalid_tensor():

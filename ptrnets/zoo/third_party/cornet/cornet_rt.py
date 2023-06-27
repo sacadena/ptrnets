@@ -52,9 +52,7 @@ class CORblock_RT(nn.Module):
         self.norm_input = nn.GroupNorm(32, out_channels)
         self.nonlin_input = nn.ReLU(inplace=True)
 
-        self.conv1 = nn.Conv2d(
-            out_channels, out_channels, kernel_size=3, padding=1, bias=False
-        )
+        self.conv1 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, bias=False)
         self.norm1 = nn.GroupNorm(32, out_channels)
         self.nonlin1 = nn.ReLU(inplace=True)
 
@@ -66,28 +64,27 @@ class CORblock_RT(nn.Module):
         state: Optional[Union[int, torch.Tensor]] = None,
         batch_size: Optional[int] = None,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
+        batch_size = batch_size or 1
+        out_shape = self.out_shape or 1
         if inp is None:  # at t=0, there is no input yet except to V1
-            inp = torch.zeros(
-                [batch_size, self.out_channels, self.out_shape, self.out_shape]
-            )
+            input_ = torch.zeros([batch_size, self.out_channels, out_shape, out_shape])
             if self.conv_input.weight.is_cuda:
-                inp = inp.cuda()
+                input_ = input_.cuda()
         else:
-            inp = self.conv_input(inp)
-            inp = self.norm_input(inp)
-            inp = self.nonlin_input(inp)
+            input_ = self.conv_input(inp)
+            input_ = self.norm_input(input_)
+            input_ = self.nonlin_input(input_)
 
-        if state is None:  # at t=0, state is initialized to 0
-            state = 0
-        skip = inp + state
+        state = state or 0
+        skip = input_ + state
 
         x = self.conv1(skip)
         x = self.norm1(x)
         x = self.nonlin1(x)
 
-        state = self.output(x)
-        output = state
-        return output, state
+        new_state = self.output(x)
+        output = new_state
+        return output, new_state
 
 
 class CORnet_RT(nn.Module):
@@ -119,9 +116,7 @@ class CORnet_RT(nn.Module):
                 this_inp = outputs["inp"]
             else:  # at t=0 there is no input yet to V2 and up
                 this_inp = None
-            new_output, new_state = getattr(self, block)(
-                this_inp, batch_size=len(outputs["inp"])
-            )
+            new_output, new_state = getattr(self, block)(this_inp, batch_size=len(outputs["inp"]))
             outputs[block] = new_output
             states[block] = new_state
 

@@ -1,12 +1,9 @@
-default_language_version:
-    python: python3.8
-exclude: gtcameramodel/archive
 repos:
 -   repo: https://github.com/codespell-project/codespell
-    rev: v2.2.1
+    rev: "v2.2.1"
     hooks:
     -   id: codespell
-        name: 'Lyft: english grammar'
+        name: 'English grammar'
         args: [--skip=*.yaml]
 -   repo: https://github.com/psf/black
     rev: 23.1.0
@@ -24,22 +21,12 @@ repos:
     hooks:
     -   id: flake8
         name: 'Python: linting'
--   repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-    -   id: pyupgrade
-        name: 'Python: upgrade'
-        args:
-        -   --py38-plus
-        -   --keep-runtime-typing
--   repo: git@github.com:lyft/lcs-precommit-hook.git
-    rev: v0.0.8
-    hooks:
-    -   id: lcs
+
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.0.1
     hooks:
     -   id: mypy
+        exclude: 'tests/.*'
         additional_dependencies:
         -   types-retry==0.9.9
         -   types-requests==2.29.0.0

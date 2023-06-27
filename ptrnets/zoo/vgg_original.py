@@ -1,3 +1,5 @@
+from typing import Any
+
 import torch
 from torch import nn
 from torchvision.models import vgg19
@@ -22,7 +24,7 @@ class VGGConv(nn.Module):
         return x
 
 
-def _vgg19conv(model_name: str, pretrained: bool, progress: bool, **kwargs):
+def _vgg19conv(model_name: str, pretrained: bool, progress: bool, **kwargs: Any) -> nn.Module:
     model = VGGConv()
     if pretrained:
         state_dict = load_state_dict_from_model_name(model_name, progress=progress)
@@ -30,7 +32,7 @@ def _vgg19conv(model_name: str, pretrained: bool, progress: bool, **kwargs):
     return model
 
 
-def vgg19_original(pretrained: bool = False, progress: bool = True, **kwargs):
+def vgg19_original(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> nn.Module:
     r"""VGG 19-layer model
     `"Very Deep Convolutional Networks For Large-Scale Image Recognition"
     <https://arxiv.org/pdf/1409.1556.pdf>` ONLY CONVOLUTIONAL LAYERS
@@ -43,7 +45,7 @@ def vgg19_original(pretrained: bool = False, progress: bool = True, **kwargs):
     return _vgg19conv("vgg19_original", pretrained, progress, **kwargs)
 
 
-def vgg19_norm(pretrained: bool = False, progress: bool = True, **kwargs):
+def vgg19_norm(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> nn.Module:
     r"""VGG 19-layer model
     `"Very Deep Convolutional Networks For Large-Scale Image Recognition"
     <https://arxiv.org/pdf/1409.1556.pdf>` ONLY CONVOLUTIONAL LAYERS

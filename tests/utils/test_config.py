@@ -38,6 +38,4 @@ def test_load_state_dict_from_model_name_url(mock_toml_config, mock_load_url):
     config.get_dict.return_value = {"url": {"model1": url}}
     load_state_dict_from_model_name(model_name)
     mock_toml_config.assert_called_once_with(file_path=get_config_file(package=zoo))
-    mock_load_url.assert_called_once_with(
-        url, progress=True, map_location="cpu", check_hash=False
-    )
+    mock_load_url.assert_called_once_with(url, progress=True, map_location="cpu", check_hash=False)

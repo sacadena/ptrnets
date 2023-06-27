@@ -33,9 +33,7 @@ from ptrnets.utils.config import load_state_dict_from_model_name
 __all__ = ["simclr_resnet50x1", "simclr_resnet50x2", "simclr_resnet50x4"]
 
 
-def conv3x3(
-    in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1
-):
+def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
     """3x3 convolution with padding"""
     return nn.Conv2d(
         in_planes,
@@ -49,7 +47,7 @@ def conv3x3(
     )
 
 
-def conv1x1(in_planes: int, out_planes: int, stride: int = 1):
+def conv1x1(in_planes: int, out_planes: int, stride: int = 1) -> nn.Conv2d:
     """1x1 convolution"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
 
@@ -122,9 +120,7 @@ class Bottleneck(nn.Module):
         norm_layer: Optional[Callable] = None,
     ) -> None:
         super().__init__()
-        self.downsample = (
-            downsample  # hack: moving downsample to the first to make order correct
-        )
+        self.downsample = downsample  # hack: moving downsample to the first to make order correct
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         width = int(planes * (base_width / 64.0)) * groups
@@ -188,21 +184,18 @@ class ResNet(nn.Module):
             replace_stride_with_dilation = [False, False, False]
         if len(replace_stride_with_dilation) != 3:
             raise ValueError(
-                "replace_stride_with_dilation should be None "
-                "or a 3-element tuple, got {}".format(replace_stride_with_dilation)
+                "replace_stride_with_dilation should be None or a 3-element tuple, got {}".format(
+                    replace_stride_with_dilation
+                )
             )
         self.groups = groups
         self.base_width = width_per_group
         self.normalized_inputs = normalized_inputs
 
         if self.normalized_inputs:
-            self.unnormalize = Unnormalize(
-                mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-            )
+            self.unnormalize = Unnormalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
-        self.conv1 = nn.Conv2d(
-            3, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False
-        )
+        self.conv1 = nn.Conv2d(3, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -255,7 +248,7 @@ class ResNet(nn.Module):
         blocks: int,
         stride: int = 1,
         dilate: bool = False,
-    ):
+    ) -> nn.Sequential:
         norm_layer = self._norm_layer
         downsample = None
         previous_dilation = self.dilation
@@ -328,7 +321,7 @@ def _model(
     normalized_inputs: bool,
     use_data_parallel: bool,
     progress: bool = True,
-) -> ResNet:
+) -> nn.Module:
     model = ResNet(
         block=block,
         layers=layers,
@@ -338,11 +331,10 @@ def _model(
 
     if pretrained:
         checkpoint = load_state_dict_from_model_name(model_name, progress=progress)
-
         model.load_state_dict(checkpoint["state_dict"])
 
         if use_data_parallel:
-            model = torch.nn.DataParallel(model)
+            return torch.nn.DataParallel(model)
 
     return model
 
@@ -352,7 +344,7 @@ def simclr_resnet50x1(
     normalized_inputs: bool = True,
     use_data_parallel: bool = False,
     progress: bool = True,
-):
+) -> nn.Module:
     r"""
     Simclr resnet50 backbone. Chen, T., Kornblith, S., Norouzi, M., & Hinton, G. (2020).
     A simple framework for contrastive learning of visual representations. arXiv preprint arXiv:2002.05709.
@@ -379,7 +371,7 @@ def simclr_resnet50x2(
     normalized_inputs: bool = True,
     use_data_parallel: bool = False,
     progress: bool = True,
-):
+) -> nn.Module:
     r"""
     Simclr resnet50 backbone with twice the width. Chen, T., Kornblith, S., Norouzi, M., & Hinton, G. (2020).
     A simple framework for contrastive learning of visual representations. arXiv preprint arXiv:2002.05709.
@@ -406,7 +398,7 @@ def simclr_resnet50x4(
     normalized_inputs: bool = True,
     use_data_parallel: bool = False,
     progress: bool = True,
-):
+) -> nn.Module:
     r"""
     Simclr resnet50 backbone with four times the width. Chen, T., Kornblith, S., Norouzi, M., & Hinton, G. (2020).
     A simple framework for contrastive learning of visual representations. arXiv preprint arXiv:2002.05709.
