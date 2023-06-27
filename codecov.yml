@@ -4,6 +4,7 @@ coverage:
   precision: 1
   ignore:
     - "ptrnets/ptrnets/zoo/*"
+    - "ptrnets/zoo"
   status:
     project:
       default:
