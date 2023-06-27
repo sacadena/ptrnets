@@ -13,7 +13,7 @@ import torch
 from gdown.parse_url import parse_url
 
 
-def _get_name(id_):
+def _get_name(id_: str) -> str:
     """
     Gets the base url name from the gdrive using the file id.
     """
@@ -28,7 +28,7 @@ def _get_name(id_):
         except requests.exceptions.ProxyError as e:
             print("An error has occurred using proxy:", file=sys.stderr)
             print(e, file=sys.stderr)
-            return
+            return ""
 
         if "Content-Disposition" in res.headers:
             # This is the file
@@ -36,11 +36,13 @@ def _get_name(id_):
         if not (file_id and is_download_link):
             break
 
+        url = res.url  # Update the URL if redirected
+
     if file_id and is_download_link:
         m = re.search('filename="(.*)"', res.headers["Content-Disposition"])
-        output = m.groups()[0]
+        output = m.groups()[0] if m else ""
     else:
-        output = os.basename(url)
+        output = os.path.basename(url)
 
     return output
 

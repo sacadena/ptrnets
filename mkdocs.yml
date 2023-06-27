@@ -1,0 +1,53 @@
+site_name: ptrnets
+repo_url: https://github.com/sacadena/ptrnets
+site_description: Easy access to pretrained networks for neural system identification and their intermediate layers
+site_author: Santiago Cadena
+edit_uri: edit/main/docs/
+repo_name: sacadena/ptrnets
+copyright: Maintained by <a href="https://sacadena.github.io">Santiago</a>.
+
+nav:
+  - Home: index.md
+  - Modules: modules.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+            setup_commands:
+                - import sys
+                - sys.path.append('../')
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/sacadena/ptrnets
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/ptrnets
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true

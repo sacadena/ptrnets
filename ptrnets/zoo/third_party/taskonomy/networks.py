@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import warnings
 from typing import Callable
+from typing import List
 from typing import Optional
 from typing import Type
+from typing import Union
 
 import torch
 import torch.nn as nn
@@ -121,20 +123,12 @@ class TaskonomyNetwork(nn.Module):
         if load_decoder_path is not None:
             self.load_decoder(load_decoder_path, model_dir, progress)
 
-    def load_encoder(
-        self, url: str, model_dir: Optional[str] = None, progress: bool = True
-    ) -> nn.Module:
-        checkpoint = torch.utils.model_zoo.load_url(
-            url, model_dir=model_dir, progress=progress
-        )
+    def load_encoder(self, url: str, model_dir: Optional[str] = None, progress: bool = True) -> nn.Module:
+        checkpoint = torch.utils.model_zoo.load_url(url, model_dir=model_dir, progress=progress)
         return self.encoder.load_state_dict(checkpoint["state_dict"])
 
-    def load_decoder(
-        self, url: str, model_dir: Optional[str] = None, progress: bool = True
-    ) -> Optional[nn.Module]:
-        checkpoint = torch.utils.model_zoo.load_url(
-            url, model_dir=model_dir, progress=progress
-        )
+    def load_decoder(self, url: str, model_dir: Optional[str] = None, progress: bool = True) -> Optional[nn.Module]:
+        checkpoint = torch.utils.model_zoo.load_url(url, model_dir=model_dir, progress=progress)
         return self.decoder.load_state_dict(checkpoint["state_dict"])
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -199,10 +193,8 @@ class TaskonomyDecoder(nn.Module):
 
             self.deconv14 = self._make_layer(32, 16, stride=2, deconv=True)
 
-            decoder_output_layers = [
-                nn.Conv2d(
-                    16, out_channels, kernel_size=3, stride=1, bias=True, padding=1
-                )
+            decoder_output_layers: List[nn.Module] = [
+                nn.Conv2d(16, out_channels, kernel_size=3, stride=1, bias=True, padding=1)
             ]
             if apply_tanh:
                 decoder_output_layers.append(nn.Tanh())
@@ -215,9 +207,8 @@ class TaskonomyDecoder(nn.Module):
         for p in self.parameters():
             p.requires_grad = False
 
-    def _make_layer(
-        self, in_channels: int, out_channels: int, stride: int = 1, deconv: bool = False
-    ) -> nn.Sequential:
+    def _make_layer(self, in_channels: int, out_channels: int, stride: int = 1, deconv: bool = False) -> nn.Sequential:
+        conv: nn.Module
         if deconv:
             pad = nn.ZeroPad2d((1, 0, 1, 0))  # Pad first row and column
             conv = nn.ConvTranspose2d(
@@ -299,9 +290,7 @@ class Bottleneck(nn.Module):
         super().__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(
-            planes, planes, kernel_size=3, stride=stride, bias=False, padding=1
-        )
+        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, bias=False, padding=1)
         # self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, bias=False)
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
@@ -346,7 +335,7 @@ class TaskonomyEncoder(nn.Module):
         eval_only: bool = True,
         train_penultimate: bool = False,
         train: bool = False,
-    ):
+    ) -> None:
         self.inplanes = 64
         super().__init__()
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
@@ -359,9 +348,7 @@ class TaskonomyEncoder(nn.Module):
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2])
         self.layer4 = self._make_layer(block, 512, layers[3])
-        self.compress1 = nn.Conv2d(
-            2048, 8, kernel_size=3, stride=1, padding=1, bias=False
-        )
+        self.compress1 = nn.Conv2d(2048, 8, kernel_size=3, stride=1, padding=1, bias=False)
         self.compress_bn = nn.BatchNorm2d(8)
         self.relu1 = nn.ReLU(inplace=True)
         self.groupnorm = nn.GroupNorm(8, 8, affine=False)
@@ -374,9 +361,7 @@ class TaskonomyEncoder(nn.Module):
 
         if train_penultimate:
             for name, param in self.named_parameters():
-                if (
-                    "compress" in name
-                ):  # last layers: compress1.weight, compress_bn.weight, compress_bn.bias
+                if "compress" in name:  # last layers: compress1.weight, compress_bn.weight, compress_bn.bias
                     param.requires_grad = True
                 else:
                     param.requires_grad = False
@@ -385,9 +370,7 @@ class TaskonomyEncoder(nn.Module):
             for p in self.parameters():
                 p.requires_grad = True
 
-    def _make_layer(
-        self, block: Type[Bottleneck], planes: int, blocks: int, stride: int = 1
-    ) -> nn.Sequential:
+    def _make_layer(self, block: Type[Bottleneck], planes: int, blocks: int, stride: int = 1) -> nn.Sequential:
         downsample = None
         layers = []
 
@@ -438,13 +421,3 @@ class TaskonomyEncoder(nn.Module):
         if self.normalize_outputs:
             x = self.groupnorm(x)
         return x
-
-    def train(self, val: bool = True) -> nn.Module:
-        if val and self.eval_only:
-            warnings.warn(
-                "Ignoring 'train()' in TaskonomyEncoder since 'eval_only' was set during initialization.",
-                RuntimeWarning,
-            )
-            return self
-        else:
-            return super().train(val)

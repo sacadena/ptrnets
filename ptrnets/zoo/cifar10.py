@@ -1,6 +1,8 @@
+from typing import Any
 from typing import Callable
 
 import torch
+from torch import nn
 from torchvision.models import resnet50
 
 from ptrnets.utils.config import load_state_dict_from_model_name
@@ -17,13 +19,8 @@ __all__ = [
 
 
 def _model(
-    model_name: str,
-    model_fn: Callable,
-    pretrained: bool,
-    progress: bool,
-    use_data_parallel: bool,
-    **kwargs,
-):
+    model_name: str, model_fn: Callable, pretrained: bool, progress: bool, use_data_parallel: bool, **kwargs: Any
+) -> nn.Module:
     model = model_fn(pretrained=False, num_classes=10, **kwargs)
     model = torch.nn.DataParallel(model) if use_data_parallel else model
 
@@ -42,23 +39,15 @@ def _model(
 
 
 def resnet50_cifar10(
-    pretrained: bool = True,
-    progress: bool = True,
-    use_data_parallel: bool = False,
-    **kwargs,
-):
+    pretrained: bool = True, progress: bool = True, use_data_parallel: bool = False, **kwargs: Any
+) -> nn.Module:
     r"""Resnet50 trained on Cifar10 starting with seed=42, and with data augmentation"""
-    return _model(
-        "resnet50_cifar10", resnet50, pretrained, progress, use_data_parallel, **kwargs
-    )
+    return _model("resnet50_cifar10", resnet50, pretrained, progress, use_data_parallel, **kwargs)
 
 
 def resnet50_cifar10_corrupt0(
-    pretrained: bool = True,
-    progress: bool = True,
-    use_data_parallel: bool = False,
-    **kwargs,
-):
+    pretrained: bool = True, progress: bool = True, use_data_parallel: bool = False, **kwargs: Any
+) -> nn.Module:
     r"""Resnet50 trained on Cifar10 starting with seed=42, and without data augmentation"""
     return _model(
         "resnet50_cifar10_corrupt0",
@@ -71,11 +60,8 @@ def resnet50_cifar10_corrupt0(
 
 
 def resnet50_cifar10_corrupt0_2(
-    pretrained: bool = True,
-    progress: bool = True,
-    use_data_parallel: bool = False,
-    **kwargs,
-):
+    pretrained: bool = True, progress: bool = True, use_data_parallel: bool = False, **kwargs: Any
+) -> nn.Module:
     r"""Resnet50 trained on Cifar10 with label corruption prob = 0.2, starting with seed=42,
     and without data augmentation"""
     return _model(
@@ -89,11 +75,8 @@ def resnet50_cifar10_corrupt0_2(
 
 
 def resnet50_cifar10_corrupt0_4(
-    pretrained: bool = True,
-    progress: bool = True,
-    use_data_parallel: bool = False,
-    **kwargs,
-):
+    pretrained: bool = True, progress: bool = True, use_data_parallel: bool = False, **kwargs: Any
+) -> nn.Module:
     r"""Resnet50 trained on Cifar10 with label corruption prob = 0.4, starting with seed=42,
     and without data augmentation"""
     return _model(
@@ -107,11 +90,8 @@ def resnet50_cifar10_corrupt0_4(
 
 
 def resnet50_cifar10_corrupt0_6(
-    pretrained: bool = True,
-    progress: bool = True,
-    use_data_parallel: bool = False,
-    **kwargs,
-):
+    pretrained: bool = True, progress: bool = True, use_data_parallel: bool = False, **kwargs: Any
+) -> nn.Module:
     r"""Resnet50 trained on Cifar10 with label corruption prob = 0.6, starting with seed=42,
     and without data augmentation"""
     return _model(
@@ -125,11 +105,8 @@ def resnet50_cifar10_corrupt0_6(
 
 
 def resnet50_cifar10_corrupt0_8(
-    pretrained: bool = True,
-    progress: bool = True,
-    use_data_parallel: bool = False,
-    **kwargs,
-):
+    pretrained: bool = True, progress: bool = True, use_data_parallel: bool = False, **kwargs: Any
+) -> nn.Module:
     r"""Resnet50 trained on Cifar10 with label corruption prob = 0.8, starting with seed=42,
     and without data augmentation"""
     return _model(
@@ -143,11 +120,8 @@ def resnet50_cifar10_corrupt0_8(
 
 
 def resnet50_cifar10_corrupt1(
-    pretrained: bool = True,
-    progress: bool = True,
-    use_data_parallel: bool = False,
-    **kwargs,
-):
+    pretrained: bool = True, progress: bool = True, use_data_parallel: bool = False, **kwargs: Any
+) -> nn.Module:
     r"""Resnet50 trained on Cifar10 with label corruption prob = 1.0, starting with seed=42,
     and without data augmentation"""
     return _model(

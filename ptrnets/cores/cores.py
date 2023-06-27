@@ -52,7 +52,7 @@ class TaskDrivenCore(Core2d):
         final_nonlinearity: bool = True,
         momentum: float = 0.1,
         fine_tune: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Core from pretrained networks on image tasks.
@@ -71,9 +71,7 @@ class TaskDrivenCore(Core2d):
         """
         if kwargs:
             warnings.warn(
-                "Ignoring input {} when creating {}".format(
-                    repr(kwargs), self.__class__.__name__
-                ),
+                f"Ignoring input {repr(kwargs)} when creating {self.__class__.__name__}",
                 UserWarning,
             )
         super().__init__()
@@ -102,9 +100,7 @@ class TaskDrivenCore(Core2d):
         self.features.add_module("TaskDriven", model_clipped)
 
         if final_batchnorm:
-            self.features.add_module(
-                "OutBatchNorm", nn.BatchNorm2d(self.outchannels, momentum=self.momentum)
-            )
+            self.features.add_module("OutBatchNorm", nn.BatchNorm2d(self.outchannels, momentum=self.momentum))
         if final_nonlinearity:
             self.features.add_module("OutNonlin", nn.ReLU(inplace=True))
 
@@ -112,7 +108,10 @@ class TaskDrivenCore(Core2d):
 
     def forward(self, input_: torch.Tensor) -> torch.Tensor:
         # If model is designed for RBG input but input is greyscale, repeat the same input 3 times
-        if self.input_channels == 1 and self.features.TaskDriven[0].in_channels == 3:
+        task_driven = self.features.get_submodule("TaskDriven")
+        if not isinstance(task_driven, nn.Sequential):
+            raise ValueError("TaskDriven module should be a sequential model")
+        if self.input_channels == 1 and task_driven[0].in_channels == 3:
             input_ = input_.repeat(1, 3, 1, 1)
         input_ = self.features(input_)
         return input_
@@ -129,7 +128,8 @@ class TaskDrivenCore(Core2d):
         Returns: Number of output channels
         """
         x = torch.randn(1, 3, 224, 224)
-        return self.features.TaskDriven(x).shape[1]
+        task_driven = self.features.get_submodule("TaskDriven")
+        return task_driven(x).shape[1]
 
     def initialize(self, cuda: bool = False) -> None:
         # Overwrite parent class's initialize function because initialization is done by the 'pretrained' parameter
@@ -148,7 +148,7 @@ class TaskDrivenCore2(Core2d):
         final_nonlinearity: bool = True,
         momentum: float = 0.1,
         fine_tune: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Core from pretrained networks on image tasks.
@@ -167,9 +167,7 @@ class TaskDrivenCore2(Core2d):
         """
         if kwargs:
             warnings.warn(
-                "Ignoring input {} when creating {}".format(
-                    repr(kwargs), self.__class__.__name__
-                ),
+                f"Ignoring input {repr(kwargs)} when creating {self.__class__.__name__}",
                 UserWarning,
             )
         super().__init__()
@@ -195,20 +193,14 @@ class TaskDrivenCore2(Core2d):
             model_clipped = clip_model(self.model, self.layer_name)
             clip_out = model_clipped(x)
         except (ValueError, RuntimeError):
-            warnings.warn(
-                "Unable to clip model {} at layer {}. Using a probe instead".format(
-                    model_name, self.layer_name
-                )
-            )
+            warnings.warn(f"Unable to clip model {model_name} at layer {self.layer_name}. Using a probe instead")
             self.use_probe = True
 
         self.model_probe = self.probe_model()
 
         if not self.use_probe:
             if not (torch.allclose(self.model_probe(x), clip_out)):
-                warnings.warn(
-                    "Unable to recover model outputs via a sequential modules. Using forward hook instead"
-                )
+                warnings.warn("Unable to recover model outputs via a sequential modules. Using forward hook instead")
                 self.use_probe = True
 
         # Remove the bias of the last conv layer if not :bias:
@@ -230,9 +222,7 @@ class TaskDrivenCore2(Core2d):
             self.features.add_module("TaskDriven", model_clipped)
 
         if final_batchnorm:
-            self.features.add_module(
-                "OutBatchNorm", nn.BatchNorm2d(self.outchannels, momentum=self.momentum)
-            )
+            self.features.add_module("OutBatchNorm", nn.BatchNorm2d(self.outchannels, momentum=self.momentum))
         if final_nonlinearity:
             self.features.add_module("OutNonlin", nn.ReLU(inplace=True))
 
@@ -256,9 +246,7 @@ class TaskDrivenCore2(Core2d):
         return 0  # useful for final loss
 
     def probe_model(self) -> Callable:
-        assert self.layer_name in [
-            n for n, _ in self.model.named_modules()
-        ], f"No module named {self.layer_name}"
+        assert self.layer_name in [n for n, _ in self.model.named_modules()], f"No module named {self.layer_name}"
         hook = hook_model_module(self.model, self.layer_name)
 
         def func(x: torch.Tensor) -> Any:
@@ -282,7 +270,8 @@ class TaskDrivenCore2(Core2d):
         if self.use_probe:
             outch = self.model_probe(x).shape[1]
         else:
-            outch = self.features.TaskDriven(x).shape[1]
+            task_driven = self.features.get_submodule("TaskDriven")
+            outch = task_driven(x).shape[1]
         return outch
 
     def initialize(self, cuda: bool = False) -> None:

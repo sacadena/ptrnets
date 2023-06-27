@@ -1,0 +1,11 @@
+coverage:
+  range: 70..100
+  round: down
+  precision: 1
+  ignore:
+    - "ptrnets/zoo/*"
+  status:
+    project:
+      default:
+        target: 30%
+        threshold: 0.5%
