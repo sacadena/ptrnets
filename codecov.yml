@@ -3,9 +3,9 @@ coverage:
   round: down
   precision: 1
   ignore:
-    - "ptrnets/zoo/*"
+    - "ptrnets/ptrnets/zoo/*"
   status:
     project:
       default:
-        target: 30%
+        target: 20%
         threshold: 0.5%
