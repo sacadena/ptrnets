@@ -26,6 +26,7 @@ pre-commit = "^2.20.0"
 tox = "^3.25.1"
 types-requests = "^2.31.0.1"
 pytest-mock = "^3.11.1"
+mkdocs = "^1.4.3"
 
 
 [tool.poetry.group.analysis.dependencies]
