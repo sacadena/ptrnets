@@ -135,4 +135,4 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
-.pyre/
+notebooks/
