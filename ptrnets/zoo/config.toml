@@ -1,16 +1,5 @@
 [model_weights]
 [model_weights.url]
-# [model_weights.url.robust]
-resnet50_l2_eps0 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps0.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
-resnet50_l2_eps0_01 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps0.01.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
-resnet50_l2_eps0_03 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps0.03.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
-resnet50_l2_eps0_05 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps0.05.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
-resnet50_l2_eps0_1 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps0.1.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
-resnet50_l2_eps0_25 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps0.25.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
-resnet50_l2_eps0_5 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps0.5.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
-resnet50_l2_eps1 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps1.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
-resnet50_l2_eps3 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps3.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
-resnet50_l2_eps5 = "https://robustnessws4285631339.blob.core.windows.net/public-models/robust_imagenet/resnet50_l2_eps5.ckpt?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2051-10-06T07:09:59Z&st=2021-10-05T23:09:59Z&spr=https,http&sig=U69sEOSMlliobiw8OgiZpLTaYyOA5yt5pHHH5%2FKUYgI%3D"
 # [model_weights.url.taskonomy]
 autoencoding_decoder = "https://github.com/alexsax/visual-prior/raw/networks/assets/pytorch/autoencoding_decoder-a4a006b5a8b314b9b0ae815c12cf80e4c5f2e6c703abdf65a64a020d3fef7941.pth"
 autoencoding_encoder = "https://github.com/alexsax/visual-prior/raw/networks/assets/pytorch/autoencoding_encoder-e35146c09253720e97c0a7f8ee4e896ac931f5faa1449df003d81e6089ac6307.pth"
@@ -66,6 +55,17 @@ cornet_rt = "https://s3.amazonaws.com/cornet-models/cornet_rt-933c001c.pth"
 cornet_s = "https://s3.amazonaws.com/cornet-models/cornet_s-1d3f7974.pth"
 
 [model_weights.gdrive]
+# [model_weights.gdrive.robust]
+resnet50_l2_eps0 = "1Q7mbabOxAVD7S8Zm5etZbLv22Qe_EGpr"
+resnet50_l2_eps0_01 = "1xAcRTH3R_cqREiR4Zmt1q54Wi_T7Zh4o"
+resnet50_l2_eps0_03 = "1anBbSHW29p3_ntFA2fCSyIbi7_niLaLQ"
+resnet50_l2_eps0_05 = "1XB1s-CLcdJ_BuliKlj4nx_1QtuLiEdQD"
+resnet50_l2_eps0_1 = "1dvBrQELD1E6c_ltXyHNO_dBU-YLaR0bg"
+resnet50_l2_eps0_25 = "1t_InTGQOC7OOVvhaW7yVbdljQ3gTmVU0"
+resnet50_l2_eps0_5 = "1TmkD33eH7IA87-Lp0cfWeucw7kwCNRkj"
+resnet50_l2_eps1 = "1A9slWO-MDPti8MYLWcHD6KE1gOhM0TuS"
+resnet50_l2_eps3 = "1crweivE90bYLlgNPITwm_NWeX4rDkco7"
+resnet50_l2_eps5 = "1LVfRhgUdPg4kRGNC559EhmAQHxHhnkuu"
 # [model_weights.gdrive.cifar10]
 resnet50_cifar10 = "1sS1U0y-EKXBAxq1-bxkOqmnfJtRk8z2A"
 resnet50_cifar10_corrupt0 = "1ihR9o1xzb5BggBdvRRwt76g9vrv5sBRF"

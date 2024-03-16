@@ -1,4 +1,5 @@
 from typing import Any
+from typing import List
 
 import torch
 import torchvision
@@ -28,9 +29,14 @@ AVAILABLE_MODELS = (
     + __all__simclr
     + __all__taskonomy
     + __all__vgg_original
+    + torchvision.models.list_models()
 )
 
 
 def resnet50_untrained(seed: int = 42, **kwargs: Any) -> nn.Module:
     torch.manual_seed(seed)
     return torchvision.models.resnet50(pretrained=False, **kwargs)
+
+
+def list_models() -> List[str]:
+    return AVAILABLE_MODELS
