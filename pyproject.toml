@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ptrnets"
-version = "0.1.0"
+version = "0.1.1"
 description = "Easy access to pretrained models for system identification"
 authors = ["Santiago Cadena"]
 repository = "https://github.com/sacadena/ptrnets"
